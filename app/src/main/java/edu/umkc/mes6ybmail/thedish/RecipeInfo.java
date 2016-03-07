@@ -136,7 +136,7 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_recipeinfo, container, false);
             TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            textView.setText(getString(R.string.section_format));
+            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
             return rootView;
         }
     }

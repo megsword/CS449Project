@@ -48,7 +48,8 @@ android:gravity="center_horizontal" android:weightSum="1">
 
     <Button android:text="Add Recipe"
         android:id="@+id/button1"
-        android:textColor="@color/colorPrimaryDark"
+        android:textColor="@color/colorBackground"
+        android:background="@color/colorPrimary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"></Button>
 </LinearLayout>
