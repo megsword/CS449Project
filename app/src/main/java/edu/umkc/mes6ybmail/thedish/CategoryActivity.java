@@ -1,46 +1,37 @@
 package edu.umkc.mes6ybmail.thedish;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
-
-import junit.framework.Assert;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class RecipeActivity extends AppCompatActivity
-implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
+public class CategoryActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
     static final private String TAG = "The Dish";
     private ArrayAdapter<String> adapter;
     private ArrayList<String> listItems = new ArrayList<String>();
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    private ArrayList<Category> categories;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe);
+        setContentView(R.layout.activity_category);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar);
@@ -54,6 +45,7 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view2);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         Intent intent = getIntent();
         String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
         Context context = getApplicationContext();
@@ -62,41 +54,63 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
 
-        View prevButton = findViewById(R.id.button1);
-        prevButton.setOnClickListener(this);
+        model mdel = model.instance(getApplicationContext());
 
-        ListView listView = (ListView)this.findViewById(R.id.listOfSomething);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listItems);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(this);
+        ListView categoriesListView =
+                (ListView)this.findViewById(R.id.listOfCategories);
+
+        categories = mdel.getCategory();
+
+        // If no courses, add some
+        if (categories.size() == 0) {
+            long SE1_category_id = mdel.insertCategory("Appetizers");
+            long SE2_category_id = mdel.insertCategory("Beef");
+            long SE3_category_id = mdel.insertCategory("Breads");
+            long SE4_category_id = mdel.insertCategory("Breakfast");
+            long SE5_category_id = mdel.insertCategory("Chicken");
+            long SE6_category_id = mdel.insertCategory("Desserts");
+            long SE7_category_id = mdel.insertCategory("Pasta");
+            long SE8_category_id = mdel.insertCategory("Pork");
+            long SE9_category_id = mdel.insertCategory("Salads");
+            long SE10_category_id = mdel.insertCategory("Sandwiches");
+            long SE11_category_id = mdel.insertCategory("Seafood");
+            long SE12_category_id = mdel.insertCategory("Side Dishes");
+            long SE13_category_id = mdel.insertCategory("Slow Cookers");
+            long SE14_category_id = mdel.insertCategory("Snacks");
+            long SE15_category_id = mdel.insertCategory("Soups");
+
+            categories = mdel.getCategory();
+        }
+
+        ArrayAdapter<Category> arrayAdapter =
+                new ArrayAdapter<Category>(this, R.layout.listitem , categories);
+        categoriesListView.setAdapter(arrayAdapter);
+
+        categoriesListView.setOnItemClickListener(this);
     }
 
-    // This is for button clicks
     @Override
-    public void onClick(View arg0) {
-        Assert.assertNotNull(arg0);
-        // Get string entered
-        TextView tv = (TextView) findViewById(R.id.editText1);
-        // Add string to underlying data structure
-        listItems.add(tv.getText().toString());
-        // Notify adapter that underlying data structure changed
-        adapter.notifyDataSetChanged();
-    }
+    public void onItemClick(AdapterView<?> parent, View v,
+                            int position, long id) {
+        Category selectedCategory = categories.get(position);
 
-    // This is for selecting an item from the list
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Get item from ListView
-        //String item = (String) parent.getItemAtPosition(position);
-        //item = "@+string/recipe_title";
-        //String text = "You selected item " + position +
-               //" value = " + item;
-        // Use a toast message to show which item selected
-       //Toast toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        //toast.show();
-        Intent intent = new Intent(this, RecipeInfo.class);
-        intent.putExtra(EXTRA_DATA, "Enter recipe details here.");
+        model mdel = model.instance(this);
+        //ArrayList<Recipe> recipes = mdel.getRecipes(selectedCategory);
+
+       // Toast.makeText(this, "Recipes: " + recipes.toString(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, RecipeActivity.class);
+        intent.putExtra(EXTRA_DATA, "You may add your recipes to this page.");
         startActivity(intent);
+    }
+
+    public void updateCategory(long categoryID, String categoryName) {
+        model mdel = model.instance(this);
+        try {
+            mdel.updateCategory(categoryID, categoryName);
+        } catch (Exception e) {
+            Toast.makeText(this,"***Error. Course " + categoryID + " doesn't exist.",Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -114,9 +128,8 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         if (id == R.id.nav_recipes) {
         }
 
-        Intent intent = new Intent(this, CategoryActivity.class);
-        intent.putExtra(EXTRA_DATA, "Here are your recipe categories.");
-        startActivity(intent);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

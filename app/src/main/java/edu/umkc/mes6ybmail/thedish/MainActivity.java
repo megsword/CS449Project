@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_recipes) {
             //go to recipes page
-            Intent intent = new Intent(this, RecipeActivity.class);
-            intent.putExtra(EXTRA_DATA, "You may add your recipes to this page.");
+            Intent intent = new Intent(this, CategoryActivity.class);
+            intent.putExtra(EXTRA_DATA, "Here are your recipe categories.");
             startActivity(intent);
             return true;
         }

@@ -23,6 +23,16 @@
             android:label="Recipe Catalog"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".CategoryActivity"
+            android:label="Recipe Catalog"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".RecipeInfo"
+            android:label="Recipe Details"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

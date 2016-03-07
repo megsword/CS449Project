@@ -8,7 +8,7 @@
             android:title="Home" />
         <item
             android:id="@+id/nav_recipes"
-            android:icon="@mipmap/recipes_icon"
+            android:icon="@mipmap/recipe_icon"
             android:title="Recipes" />
 
     </group>
