@@ -66,7 +66,7 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         prevButton.setOnClickListener(this);
 
         ListView listView = (ListView)this.findViewById(R.id.listOfSomething);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listItems);
+        adapter = new ArrayAdapter<String>(this, R.layout.listitem2 , listItems);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(this);
     }
@@ -81,6 +81,7 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         listItems.add(tv.getText().toString());
         // Notify adapter that underlying data structure changed
         adapter.notifyDataSetChanged();
+        tv.setText("");
     }
 
     // This is for selecting an item from the list

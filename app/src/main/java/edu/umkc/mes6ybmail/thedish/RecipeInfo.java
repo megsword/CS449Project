@@ -29,11 +29,12 @@ import junit.framework.Assert;
 
 import java.util.ArrayList;
 
-public class RecipeInfo extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener{
+public class RecipeInfo extends AppCompatActivity{
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
     static final private String TAG = "The Dish";
-    private ArrayAdapter<String> adapter1;
-    private ArrayList<String> listItems1 = new ArrayList<String>();
+    private static Context context;
+    public static int position;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -54,16 +55,16 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipeinfo);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar3);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarf);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
         String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
-        Context context = getApplicationContext();
+        RecipeInfo.context = getApplicationContext();
         CharSequence text = message;
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+        //toast.show();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -73,48 +74,25 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        View prevButton = findViewById(R.id.button);
-        prevButton.setOnClickListener(this);
-
-        ListView listView = (ListView)this.findViewById(R.id.listOfSomething1);
-        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1 , listItems1);
-        listView.setAdapter(adapter1);
-        listView.setOnItemClickListener(this);
+        model mdel = model.instance(getApplicationContext());
 
     }
 
-    @Override
-    public void onClick(View arg0) {
-        Assert.assertNotNull(arg0);
-        // Get string entered
-        TextView tv = (TextView) findViewById(R.id.editText);
-        // Add string to underlying data structure
-        listItems1.add(tv.getText().toString());
-        // Notify adapter that underlying data structure changed
-        adapter1.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Get item from ListView
-        String item = (String) parent.getItemAtPosition(position);
-        item = "@+string/recipe_title";
-        String text = "You selected item " + position +
-        " value = " + item;
-        // Use a toast message to show which item selected
-        Toast toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        toast.show();
+    public static Context getAppContext() {
+        return RecipeInfo.context;
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener{
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private ArrayAdapter<String> adapter1;
+        private ArrayList<String> listItems1 = new ArrayList<String>();
 
         public PlaceholderFragment() {
         }
@@ -127,17 +105,68 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
             PlaceholderFragment fragment = new PlaceholderFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+            position = sectionNumber;
             fragment.setArguments(args);
             return fragment;
         }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+
             View rootView = inflater.inflate(R.layout.fragment_recipeinfo, container, false);
-            TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+            View Button = rootView.findViewById(R.id.button);
+            View ButtonHome = rootView.findViewById(R.id.home);
+            View ButtonF = rootView.findViewById(R.id.fab);
+            Button.setOnClickListener(this);
+            ButtonHome.setOnClickListener(this);
+            ButtonF.setOnClickListener(this);
+
+            ListView listView = (ListView)rootView.findViewById(R.id.listOfSomething1);
+            adapter1 = new ArrayAdapter<String>(RecipeInfo.getAppContext(), R.layout.listitem2 , listItems1);
+            listView.setAdapter(adapter1);
+            listView.setOnItemClickListener(this);
+
             return rootView;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.button) {
+                Assert.assertNotNull(v);
+                // Get string entered
+                TextView tv = (TextView) getView().findViewById(R.id.editText);
+                // Add string to underlying data structure
+                listItems1.add(tv.getText().toString());
+                // Notify adapter that underlying data structure changed
+                adapter1.notifyDataSetChanged();
+                tv.setText("");
+            }
+            if (v.getId() == R.id.home)
+            {
+                Intent intent = new Intent(MainActivity.getAppContext(), MainActivity.class);
+                startActivity(intent);
+            }
+            if (v.getId() == R.id.fab)
+            {
+                String text = "Enter recipe ingredients on page 1.\n" +
+                        "Enter recipe instructions on page 2.\n" +
+                        "Enter recipe hints on page 3.";
+                Toast toast = Toast.makeText(RecipeInfo.getAppContext(), text, Toast.LENGTH_LONG);
+                toast.show();
+            }
+
+        }
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // Get item from ListView
+            String item = (String) parent.getItemAtPosition(position);
+            //item = "@+string/recipe_title";
+            String text = "You selected item " + position +
+                    " value = " + item;
+            // Use a toast message to show which item selected
+            Toast toast = Toast.makeText(RecipeInfo.getAppContext(), text, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 
@@ -145,8 +174,9 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        public static int location;
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -168,22 +198,13 @@ public class RecipeInfo extends AppCompatActivity implements View.OnClickListene
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0: {
-                    //String text = "Enter recipe ingredients here.";
-                    //Toast toast = Toast.makeText(, text, Toast.LENGTH_LONG);
-                    //toast.show();
-                    return "SECTION 1";
+                    return "1";
                 }
                 case 1: {
-                    //String text = "Enter recipe instructions here.";
-                    //Toast toast = Toast.makeText(, text, Toast.LENGTH_LONG);
-                    //toast.show();
-                    return "SECTION 2";
+                    return "2";
                 }
                 case 2: {
-                    //View rootView = inflater.inflate(R.layout.fragment_recipeinfo, container, false);
-                    //TextView textView = (TextView) rootView.findViewById(R.id.section_label);
-                    //textView.setText(getString(R.string.section_end));
-                    return "SECTION 3";
+                    return "3";
                 }
             }
             return null;

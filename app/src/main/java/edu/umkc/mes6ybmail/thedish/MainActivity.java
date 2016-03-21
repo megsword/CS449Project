@@ -1,5 +1,6 @@
 package edu.umkc.mes6ybmail.thedish;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,11 +15,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
     static final private String TAG = "The Dish";
+    private static Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,6 +40,13 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        MainActivity.context = getApplicationContext();
+        Intent intent = getIntent();
+    }
+
+    public static Context getAppContext() {
+        return MainActivity.context;
     }
 
     @Override

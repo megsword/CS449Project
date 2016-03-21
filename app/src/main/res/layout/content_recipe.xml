@@ -15,7 +15,8 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 android:orientation="vertical"
@@ -23,15 +24,24 @@ android:layout_width="fill_parent"
 android:layout_height="fill_parent"
 android:gravity="center_horizontal" android:weightSum="1">
 
-<ListView
+        <ListView
     android:id="@+id/listOfSomething"
     android:layout_height="483dp"
     android:layout_width="wrap_content"
     android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
-    android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+    android:layout_marginTop="16dp"
     android:layout_weight="1">
 
 </ListView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="right"
+            android:layout_margin="@dimen/fab_margin"
+            android:src="@mipmap/ic_white_fav"/>
+
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -42,7 +52,7 @@ android:gravity="center_horizontal" android:weightSum="1">
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
-        android:textColor="@color/colorPrimaryDark">
+        android:textColor="@color/colorPrimary">
         <requestFocus></requestFocus>
     </EditText>
 

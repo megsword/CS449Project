@@ -25,6 +25,7 @@ public class CategoryActivity extends AppCompatActivity
     static final private String TAG = "The Dish";
     private ArrayAdapter<String> adapter;
     private ArrayList<String> listItems = new ArrayList<String>();
+    static Category selectedCategory;
 
     private ArrayList<Category> categories;
 
@@ -92,7 +93,7 @@ public class CategoryActivity extends AppCompatActivity
     @Override
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
-        Category selectedCategory = categories.get(position);
+        selectedCategory = categories.get(position);
 
         model mdel = model.instance(this);
         //ArrayList<Recipe> recipes = mdel.getRecipes(selectedCategory);
@@ -101,6 +102,11 @@ public class CategoryActivity extends AppCompatActivity
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(EXTRA_DATA, "You may add your recipes to this page.");
         startActivity(intent);
+    }
+
+    public static Category getCategory()
+    {
+        return selectedCategory;
     }
 
     public void updateCategory(long categoryID, String categoryName) {
