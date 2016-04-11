@@ -2,6 +2,7 @@ package edu.umkc.mes6ybmail.thedish;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,104 +20,81 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class CategoryActivity extends AppCompatActivity
+public class ShoppingListActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
     static final private String TAG = "The Dish";
-    //private ArrayAdapter<String> adapter;
-    //private ArrayList<String> listItems = new ArrayList<String>();
-    static Category selectedCategory;
-
-    private ArrayList<Category> categories;
+    private static final String PREFS_NAME = "PrefsFile";
+    private static final String CHECK_KEY = "CheckKey";
+    static ShoppingListActivity selectedGroceryList;
+    private ArrayAdapter<String> adapter1;
+    private ArrayList<String> listItems = new ArrayList<String>();
+    private String groceries = "groceries";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
+        setContentView(R.layout.activity_shop);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar3);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout3);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view2);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view3);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (savedInstanceState != null) {
+            listItems = savedInstanceState.getStringArrayList("groceries");
+        }
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        for (int i = 0;; ++i){
+            final String str = settings.getString(String.valueOf(i), "");
+            if (!str.equals("")){
+                adapter1.add(str);
+            } else {
+                break;
+            }
+        }
+        //adapter1.notifyDataSetChanged();
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
+        String message = intent.getStringExtra(ShoppingListActivity.EXTRA_DATA);
         Context context = getApplicationContext();
         CharSequence text = message;
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
 
-        model mdel = model.instance(getApplicationContext());
+        ListView shopListView =
+                (ListView)this.findViewById(R.id.listOfGroceries);
 
-        ListView categoriesListView =
-                (ListView)this.findViewById(R.id.listOfCategories);
+        adapter1 = new ArrayAdapter<String>(context, R.layout.listitemcheck, R.id.textCheck , listItems);
+        shopListView.setAdapter(adapter1);
+        shopListView.setOnItemClickListener(this);
+    }
 
-        categories = mdel.getCategories();
-
-        // If no courses, add some
-        if (categories.size() == 0) {
-            long SE1_category_id = mdel.insertCategory("Appetizers");
-            long SE2_category_id = mdel.insertCategory("Beef");
-            long SE3_category_id = mdel.insertCategory("Breads");
-            long SE4_category_id = mdel.insertCategory("Breakfast");
-            long SE5_category_id = mdel.insertCategory("Chicken");
-            long SE6_category_id = mdel.insertCategory("Desserts");
-            long SE7_category_id = mdel.insertCategory("Pasta");
-            long SE8_category_id = mdel.insertCategory("Pork");
-            long SE9_category_id = mdel.insertCategory("Salads");
-            long SE10_category_id = mdel.insertCategory("Sandwiches");
-            long SE11_category_id = mdel.insertCategory("Seafood");
-            long SE12_category_id = mdel.insertCategory("Side Dishes");
-            long SE13_category_id = mdel.insertCategory("Slow Cookers");
-            long SE14_category_id = mdel.insertCategory("Snacks");
-            long SE15_category_id = mdel.insertCategory("Soups");
-
-            categories = mdel.getCategories();
+    public void addGrocery(String grocery)
+    {
+        listItems.add(grocery);
+        // Notify adapter that underlying data structure changed
+        adapter1.notifyDataSetChanged();
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        for (int i = 0; i < adapter1.getCount(); ++i) {
+            editor.putString(String.valueOf(i), adapter1.getItem(i));
         }
-
-        ArrayAdapter<Category> arrayAdapter =
-                new ArrayAdapter<Category>(this, R.layout.listitem , categories);
-        categoriesListView.setAdapter(arrayAdapter);
-
-        categoriesListView.setOnItemClickListener(this);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
-        selectedCategory = categories.get(position);
 
-        model mdel = model.instance(this);
-        //ArrayList<Recipe> recipes = mdel.getRecipes(selectedCategory);
-
-       // Toast.makeText(this, "Recipes: " + recipes.toString(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, RecipeActivity.class);
-        intent.putExtra(EXTRA_DATA, "You may add your recipes to this page.");
-        startActivity(intent);
-    }
-
-    //public static long getCategoryID()
-   // {
-        //return CategoryActivity.selectedCategory.categoryID();
-   // }
-
-    public void updateCategory(long categoryID, String categoryName) {
-        model mdel = model.instance(this);
-        try {
-            mdel.updateCategory(categoryID, categoryName);
-        } catch (Exception e) {
-            Toast.makeText(this,"***Error. Course " + categoryID + " doesn't exist.",Toast.LENGTH_SHORT).show();
-        }
-
+        Toast.makeText(this, "Groceries: " + listItems.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -132,13 +110,13 @@ public class CategoryActivity extends AppCompatActivity
         }
 
         if (id == R.id.nav_recipes) {
+            Intent intent = new Intent(this, CategoryActivity.class);
+            intent.putExtra(EXTRA_DATA, "Here are your recipe categories.");
+            startActivity(intent);
+            return true;
         }
 
         if (id == R.id.nav_shop){
-            Intent intent = new Intent(this, ShoppingListActivity.class);
-            intent.putExtra(EXTRA_DATA, "Here are your grocery items.");
-            startActivity(intent);
-            return true;
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -197,6 +175,7 @@ public class CategoryActivity extends AppCompatActivity
         super.onSaveInstanceState(icicle);
 
         Log.i(TAG, "onSaveInstanceState()");
+        icicle.getStringArrayList("groceries");
     }
 
     @Override
@@ -205,4 +184,5 @@ public class CategoryActivity extends AppCompatActivity
         Log.i(TAG, "onRestoreInstanceState()");
     }
 }
+
 

@@ -75,6 +75,13 @@ public class MainActivity extends AppCompatActivity
             return true;
         }
 
+        if (id == R.id.nav_shop){
+            Intent intent = new Intent(this, ShoppingListActivity.class);
+            intent.putExtra(EXTRA_DATA, "Here are your grocery items.");
+            startActivity(intent);
+            return true;
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

@@ -10,10 +10,12 @@ public class model {
 
     private CategoryGateway categoryGateway;
     private RecipeGateway recipeGateway;
+    private RecipeInfoGateway recipeInfoGateway;
 
     private model(Context context) {
         categoryGateway = new CategoryGateway(context);
         recipeGateway = new RecipeGateway(context);
+        recipeInfoGateway = new RecipeInfoGateway(context);
     }
 
     public synchronized static model instance(Context context) {
@@ -23,7 +25,7 @@ public class model {
         return instance;
     }
 
-    public ArrayList<Category> getCategory() {
+    public ArrayList<Category> getCategories() {
         return categoryGateway.findAll();
     }
 
@@ -35,12 +37,24 @@ public class model {
         return recipeGateway.insert(categoryID, recipeName);
     }
 
+    public long insertRecipeInfo(long recipeID, String recipeInfoName) {
+        return recipeInfoGateway.insert(recipeID, recipeInfoName);
+    }
+
     public void updateCategory(long categoryID, String categoryName) throws Exception {
         categoryGateway.update(categoryID,categoryName);
     }
 
+    public void updateRecipe(long categoryID, String recipeName) throws Exception {
+        recipeGateway.update(categoryID,recipeName);
+    }
+
     public ArrayList<Recipe> getRecipes(Category c) {
-        return recipeGateway.findForCourse(c);
+        return recipeGateway.findForCategory(c);
+    }
+
+    public ArrayList<RecipeInfo> getRecipeInfo(Recipe r) {
+        return recipeInfoGateway.findForRecipe(r);
     }
 }
 

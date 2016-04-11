@@ -29,8 +29,13 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".RecipeInfo"
+            android:name=".RecipeInfoActivity"
             android:label="Recipe Details"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".ShoppingListActivity"
+            android:label="Grocery List"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

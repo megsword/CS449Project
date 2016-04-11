@@ -10,7 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.umkc.mes6ybmail.thedish.RecipeInfo$PlaceholderFragment">
+    tools:context=".RecipeInfoActivity$PlaceholderFragment">
 
     <TextView
         android:id="@+id/section_label"
@@ -29,7 +29,6 @@
             android:id="@+id/listOfSomething1"
             android:layout_height="483dp"
             android:layout_width="wrap_content"
-            android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
             android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
             android:layout_weight="1">
 
@@ -52,6 +51,18 @@
             android:id="@+id/home"
             android:layout_gravity="right"
             android:layout_weight="1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" Add to Grocery List "
+            android:textColor="@color/colorBackground"
+            android:background="@color/colorPrimary"
+            android:id="@+id/shop"
+            android:layout_gravity="right"
+            android:layout_weight="1" />
+
+
 
         <LinearLayout
             android:layout_width="match_parent"

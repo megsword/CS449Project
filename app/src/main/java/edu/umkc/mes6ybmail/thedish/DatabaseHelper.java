@@ -16,6 +16,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String CATEGORY_TABLE = "Categories";
     public static final String RECIPE_TABLE = "Recipes";
+    public static final String RECIPE_INFO_TABLE = "RecipeInfo";
 
     // Both tables have an _id field.
     // By convention, the first column is always called _id.
@@ -27,7 +28,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Fields defined for table Assignments
     // course_id is a foreign key
     public static final String FIELD_CATEGORY = "category_id";
+    public static final String FIELD_RECIPE = "recipe_id";
     public static final String FIELD_RECIPE_NAME = "recipe_name";
+    public static final String FIELD_RECIPE_INFO_NAME = "recipe_info_name";
 
     // SQL Statement to create a new database tables
     private static final String DATABASE_CREATE_CATEGORIES = "create table " +
@@ -39,6 +42,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             FIELD_CATEGORY + " integer, " +
             FIELD_RECIPE_NAME + " text not null);";
 
+    private static final String DATABASE_CREATE_RECIPE_INFO = "create table " +
+            RECIPE_INFO_TABLE + " (" + FIELD_ID + " integer primary key autoincrement, " +
+            FIELD_RECIPE + " integer, " +
+            FIELD_RECIPE_INFO_NAME + " text not null);";
+
 
     public DatabaseHelper(Context ctx){
         super(ctx, DATABASE_NAME, null, DATABASE_VERSION);
@@ -48,6 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase database) {
         database.execSQL(DATABASE_CREATE_CATEGORIES);
         database.execSQL(DATABASE_CREATE_RECIPES);
+        database.execSQL(DATABASE_CREATE_RECIPE_INFO);
     }
 
     // Method is called during an upgrade of the database, e.g. if you increase
@@ -60,6 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                         + newVersion);
         database.execSQL("DROP TABLE IF EXISTS " + CATEGORY_TABLE);
         database.execSQL("DROP TABLE IF EXISTS " + RECIPE_TABLE);
+        database.execSQL("DROP TABLE IF EXISTS " + RECIPE_INFO_TABLE);
         onCreate(database);
     }
 
