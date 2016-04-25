@@ -109,7 +109,7 @@ public class CategoryActivity extends AppCompatActivity
         //return CategoryActivity.selectedCategory.categoryID();
    // }
 
-    public void updateCategory(long categoryID, String categoryName) {
+    public void updateCategory(int categoryID, String categoryName) {
         model mdel = model.instance(this);
         try {
             mdel.updateCategory(categoryID, categoryName);
@@ -136,7 +136,13 @@ public class CategoryActivity extends AppCompatActivity
 
         if (id == R.id.nav_shop){
             Intent intent = new Intent(this, ShoppingListActivity.class);
-            intent.putExtra(EXTRA_DATA, "Here are your grocery items.");
+            intent.putExtra(EXTRA_DATA, "Add your grocery items to this page.");
+            startActivity(intent);
+            return true;
+        }
+        if (id == R.id.nav_meals){
+            Intent intent = new Intent(this, MealPlan.class);
+            intent.putExtra(EXTRA_DATA, "Add your meals to this page.");
             startActivity(intent);
             return true;
         }

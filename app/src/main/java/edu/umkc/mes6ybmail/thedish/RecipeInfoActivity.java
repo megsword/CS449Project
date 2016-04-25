@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class RecipeInfoActivity extends AppCompatActivity{
     static final private String TAG = "The Dish";
     private static Context context;
     public static int position;
+    private static final int NUMBER_OF_TABS = 3;
+    private Fragment[] tabList = new Fragment[NUMBER_OF_TABS];
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -121,7 +124,7 @@ public class RecipeInfoActivity extends AppCompatActivity{
             View ButtonHome = rootView.findViewById(R.id.home);
             View ButtonF = rootView.findViewById(R.id.fab);
             View ButtonS = rootView.findViewById(R.id.shop);
-            View check = rootView.findViewById(R.id.checkBox1);
+            //View check = rootView.findViewById(R.id.checkBox1);
             Button.setOnClickListener(this);
             ButtonHome.setOnClickListener(this);
             ButtonF.setOnClickListener(this);
@@ -177,9 +180,17 @@ public class RecipeInfoActivity extends AppCompatActivity{
                 toast.show();
             }
             if (v.getId() == R.id.shop) {
-                //for (int i = 0; i < arrayAdapter.getCount(); i++) {
+             //   int cntChoice = getListView().getCount();
 
-
+             //   SparseBooleanArray sparseBooleanArray = getListView().getCheckedItemPositions();
+              //  for (int i = 0; i < cntChoice; i++) {
+              //      int idx = sparseBooleanArray.keyAt(i);
+              //      if(sparseBooleanArray.valueAt(i) == true)
+              //      {
+                //        String s = (String)this.getListView().getAdapter().getItem(idx);
+                  //      ShoppingListActivity.selectedGroceryList.addGrocery(s);
+                    //    cb.setChecked(false);
+                   // }
                     //Replace R.id.checkbox with the id of CheckBox in your layout
                     //CheckBox mCheckBox = (CheckBox) mChild.findViewById(R.id.checkbox1);
                     //mCheckBox.setChecked(false);
@@ -198,8 +209,8 @@ public class RecipeInfoActivity extends AppCompatActivity{
             }
             else {
                 model mdel = model.instance(RecipeInfoActivity.getAppContext());
-                mdel.insertRecipeInfo(RecipeActivity.selectedRecipe.recipeID(), tv.getText().toString());
-                cb = (CheckBox) getView().findViewById(R.id.checkBox1);
+                mdel.insertRecipeInfo(RecipeActivity.selectedRecipe.recipeID(), rec);
+                //cb = (CheckBox) getView().findViewById(R.id.checkBox1);
                 //cb.setOnClickListener(this);
                 // Notify adapter that underlying data structure changed
                 recipeInfos.clear();
@@ -225,7 +236,7 @@ public class RecipeInfoActivity extends AppCompatActivity{
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // Get item from ListView
             selectedRecipeInfo = recipeInfos.get(position);
-            String item = (String) parent.getItemAtPosition(position);
+            RecipeInfo item = (RecipeInfo) parent.getItemAtPosition(position);
             //item = "@+string/recipe_title";
             String text = "You selected item " + position +
                     " value = " + item;

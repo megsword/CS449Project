@@ -10,12 +10,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="edu.umkc.mes6ybmail.thedish.ShoppingListActivity"
+    tools:context="edu.umkc.mes6ybmail.thedish.RecipeActivity"
     tools:showIn="@layout/app_bar_shop">
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorPrimary"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
@@ -23,17 +24,46 @@
         android:layout_height="fill_parent"
         android:gravity="center_horizontal" android:weightSum="1">
 
-        <ListView android:id="@+id/listOfGroceries"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:layout_weight="1"></ListView>
+        <ListView
+            android:id="@+id/listOf"
+            android:layout_height="483dp"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:clickable="false">
 
-        <Button android:text=" Delete Ingredient "
-            android:id="@+id/buttonIng"
+        </ListView>
+
+        <Button android:text="Delete"
+            android:id="@+id/buttonD"
             android:textColor="@color/colorBackground"
             android:background="@color/colorPrimary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"></Button>
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"></Button>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/linearLayout1">
+
+            <EditText android:layout_weight="1"
+                android:id="@+id/editText1"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="@dimen/abc_action_bar_content_inset_material"
+                android:textColor="@color/colorPrimary">
+                <requestFocus></requestFocus>
+            </EditText>
+
+            <Button android:text="Add"
+                android:id="@+id/button1"
+                android:textColor="@color/colorBackground"
+                android:background="@color/colorPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></Button>
+
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

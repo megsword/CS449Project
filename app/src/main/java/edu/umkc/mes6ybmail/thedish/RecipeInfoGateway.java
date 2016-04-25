@@ -117,7 +117,7 @@ public class RecipeInfoGateway {
         assert x == 1;
     }
 
-    public boolean delete(int id) { // id is primary key for record
+    public boolean delete(long id) { // id is primary key for record
         DatabaseHelper dbHelper = new DatabaseHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 

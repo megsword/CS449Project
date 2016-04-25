@@ -38,6 +38,11 @@
             android:label="Grocery List"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".MealPlan"
+            android:label="Meal Plan"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

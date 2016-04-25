@@ -2,80 +2,93 @@ package edu.umkc.mes6ybmail.thedish;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import junit.framework.Assert;
 
 import java.util.ArrayList;
 
-public class RecipeActivity extends AppCompatActivity
-implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
+public class MealPlan extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
     static final private String TAG = "The Dish";
-    private ArrayAdapter<Recipe> arrayAdapter;
-    static Recipe selectedRecipe;
-    private ArrayList<Recipe> recipes;
-    static long SE_recipe_id;
+    private static final String PREFS_NAME = "PrefsFile";
+    private static final String CHECK_KEY = "CheckKey";
+    static ShoppingListActivity selectedGroceryList;
+    private ArrayAdapter<String> adapter1;
+    private ArrayList<String> listItems = new ArrayList<String>();
+    private String meals = "meals";
     static public CheckBox cb;
     public TextView tv;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipe);
+        setContentView(R.layout.activity_shop);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar3);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout3);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view2);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view3);
         navigationView.setNavigationItemSelectedListener(this);
 
+        if (savedInstanceState != null) {
+            listItems = savedInstanceState.getStringArrayList("meals");
+        }
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        for (int i = 0; ; ++i) {
+            final String str = settings.getString(String.valueOf(i), "");
+            if (!str.equals("")) {
+                adapter1.add(str);
+            } else {
+                break;
+            }
+            adapter1.notifyDataSetChanged();
+        }
+
         Intent intent = getIntent();
-        String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
+        String message = intent.getStringExtra(ShoppingListActivity.EXTRA_DATA);
         Context context = getApplicationContext();
         CharSequence text = message;
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
 
-        View prevButton = findViewById(R.id.button1);
-        prevButton.setOnClickListener(this);
+        View addButton = findViewById(R.id.button1);
+        addButton.setOnClickListener(this);
+        View deleteButton = findViewById(R.id.buttonD);
+        deleteButton.setOnClickListener(this);
 
-        model mdel = model.instance(getApplicationContext());
+        ListView shopListView =
+                (ListView)this.findViewById(R.id.listOfGroceries);
 
-        ListView recipeListView =
-                (ListView)this.findViewById(R.id.listOfSomething);
-
-        recipes = mdel.getRecipes(CategoryActivity.selectedCategory);
-
-        arrayAdapter = new ArrayAdapter<Recipe>(this, R.layout.listitemcheck , R.id.textCheck, recipes);
-        recipeListView.setAdapter(arrayAdapter);
-        recipeListView.setOnItemClickListener(this);
+        adapter1 = new ArrayAdapter<String>(context, R.layout.listitemcheck, R.id.textCheck , listItems);
+        shopListView.setAdapter(adapter1);
+        shopListView.setOnItemClickListener(this);
     }
 
-    // This is for button clicks
     @Override
     public void onClick(View arg0) {
         Assert.assertNotNull(arg0);
@@ -86,58 +99,47 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         try {
             insertItem(tv.getText().toString());
         }
-        catch (RecipeException ex) {
+        catch (MealException ex) {
             System.out.println("Please enter a recipe");
         }
         tv.setText("");
     }
 
-    public void insertItem(String rec) throws RecipeException{
+    public void insertItem(String rec) throws MealException{
         if (rec == "" || rec.trim().equals("") || rec == null) {
-            RecipeException errorRecipe = new RecipeException("Recipe title is empty.");
+            MealException errorRecipe = new MealException("Recipe title is empty.");
             throw errorRecipe;
         }
         else {
-            model mdel = model.instance(this);
-            SE_recipe_id = mdel.insertRecipe(CategoryActivity.selectedCategory.categoryID(), rec);
+            listItems.add(rec);
+            // Notify adapter that underlying data structure change
             cb = (CheckBox) findViewById(R.id.checkBox1);
-            recipes.clear();
-            recipes.addAll(mdel.getRecipes(CategoryActivity.selectedCategory));
-            arrayAdapter.notifyDataSetChanged();
+            adapter1.notifyDataSetChanged();
+            SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString(meals, rec);
+            editor.commit();
         }
     }
 
-    // This is for selecting an item from the list
+    public void addGrocery(String grocery)
+    {
+        listItems.add(grocery);
+        // Notify adapter that underlying data structure changed
+        adapter1.notifyDataSetChanged();
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString(meals, grocery);
+        editor.commit();
+    }
+
+
+
     @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        // Get item from ListView
-        //String item = (String) parent.getItemAtPosition(position);
-        //item = "@+string/recipe_title";
-        //String text = "You selected item " + position +
-               //" value = " + item;
-        // Use a toast message to show which item selected
-       //Toast toast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-        //toast.show();
-        selectedRecipe = recipes.get(position);
-        model mdel = model.instance(this);
-        Intent intent = new Intent(this, RecipeInfoActivity.class);
-        intent.putExtra(EXTRA_DATA, "Enter recipe details here.");
-        startActivity(intent);
-    }
+    public void onItemClick(AdapterView<?> parent, View v,
+                            int position, long id) {
 
-    public static long getRecipeID()
-     {
-        return SE_recipe_id;
-    }
-
-    public void updateRecipe (int categoryID, String recipeName) {
-        model mdel = model.instance(this);
-        try {
-            mdel.updateRecipe(categoryID, recipeName);
-        } catch (Exception e) {
-            Toast.makeText(this,"***Error. Recipe " + recipeName + " doesn't exist.",Toast.LENGTH_SHORT).show();
-        }
-
+        Toast.makeText(this, "Meals: " + listItems.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -160,21 +162,14 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         }
 
         if (id == R.id.nav_shop){
-            Intent intent = new Intent(this, ShoppingListActivity.class);
+            Intent intent = new Intent(this, CategoryActivity.class);
             intent.putExtra(EXTRA_DATA, "Add your grocery items to this page.");
             startActivity(intent);
             return true;
         }
-
-        if (id == R.id.nav_meals){
-            Intent intent = new Intent(this, MealPlan.class);
-            intent.putExtra(EXTRA_DATA, "Add your meals to this page.");
-            startActivity(intent);
+            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+            drawer.closeDrawer(GravityCompat.START);
             return true;
-        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 
     @Override
@@ -187,9 +182,9 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         }
     }
 
-    class RecipeException extends Exception {
-        public RecipeException() {}
-        public RecipeException(String msg) {
+    class MealException extends Exception {
+        public MealException() {}
+        public MealException(String msg) {
             super(msg);
         }
     }
@@ -235,10 +230,19 @@ implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener
         super.onSaveInstanceState(icicle);
 
         Log.i(TAG, "onSaveInstanceState()");
+        //icicle.getStringArrayList("groceries");
+        icicle.putStringArrayList("groceries", listItems);
+
+        super.onSaveInstanceState(icicle);
+
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle icicle) {
+        super.onRestoreInstanceState(icicle);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+        listItems = icicle.getStringArrayList("groceries");
         super.onRestoreInstanceState(icicle);
         Log.i(TAG, "onRestoreInstanceState()");
     }
