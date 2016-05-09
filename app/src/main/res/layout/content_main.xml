@@ -11,7 +11,7 @@
     android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="edu.umkc.mes6ybmail.thedish.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/appbar_main">
 
     <TextView
         android:layout_width="wrap_content"

@@ -12,14 +12,12 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,26 +27,16 @@ import junit.framework.Assert;
 import java.util.ArrayList;
 
 public class RecipeInfoActivity extends AppCompatActivity{
-    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
+    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish";
     static final private String TAG = "The Dish";
-    private static Context context;
+    private static final String PREFS_NAME = "PrefsFile1";
+    private static Context recipeInfoCcontext;
     public static int position;
     private static final int NUMBER_OF_TABS = 3;
     private Fragment[] tabList = new Fragment[NUMBER_OF_TABS];
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
     private SectionsPagerAdapter mSectionsPagerAdapter;
 
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
     private ViewPager mViewPager;
 
     @Override
@@ -56,16 +44,16 @@ public class RecipeInfoActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipeinfo);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbarf);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         Intent intent = getIntent();
-        String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
-        RecipeInfoActivity.context = getApplicationContext();
-        CharSequence text = message;
+        String recipeInfoMessage = intent.getStringExtra(RecipeInfoActivity.EXTRA_DATA);
+        RecipeInfoActivity.recipeInfoCcontext = getApplicationContext();
+        CharSequence recipeInfoText = recipeInfoMessage;
         int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        //toast.show();
+        Toast toast = Toast.makeText(recipeInfoCcontext, recipeInfoText, duration);
+        toast.show();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -74,13 +62,10 @@ public class RecipeInfoActivity extends AppCompatActivity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        //model mdel = model.instance(getApplicationContext());
-
     }
 
     public static Context getAppContext() {
-        return RecipeInfoActivity.context;
+        return RecipeInfoActivity.recipeInfoCcontext;
     }
 
     /**
@@ -92,17 +77,13 @@ public class RecipeInfoActivity extends AppCompatActivity{
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-        //private ArrayAdapter<String> adapter1;
-        //private ArrayList<String> listItems1 = new ArrayList<String>();
-        private ArrayAdapter<RecipeInfo> arrayAdapter;
-        static RecipeInfo selectedRecipeInfo;
-        private ArrayList<RecipeInfo> recipeInfos;
-        static public CheckBox cb;
-        public static TextView tv;
+        private ArrayAdapter<String> recipeInfoArrayAdapter;
+        private ArrayList<String> recipeInfoListItems = new ArrayList<String>();
+        public static TextView recipeInfoText;
+        int listNum = 0;
 
         public PlaceholderFragment() {
         }
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -119,50 +100,51 @@ public class RecipeInfoActivity extends AppCompatActivity{
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            View rootView = inflater.inflate(R.layout.fragment_recipeinfo, container, false);
-            View Button = rootView.findViewById(R.id.button);
-            View ButtonHome = rootView.findViewById(R.id.home);
-            View ButtonF = rootView.findViewById(R.id.fab);
-            View ButtonS = rootView.findViewById(R.id.shop);
-            //View check = rootView.findViewById(R.id.checkBox1);
-            Button.setOnClickListener(this);
-            ButtonHome.setOnClickListener(this);
-            ButtonF.setOnClickListener(this);
-            ButtonS.setOnClickListener(this);
+            View rootView = inflater.inflate(R.layout.content_recipeinfo, container, false);
+            View recipeButton = rootView.findViewById(R.id.addDetail);
+            View homeButton = rootView.findViewById(R.id.home);
+            View fabButton = rootView.findViewById(R.id.fab);
+            recipeButton.setOnClickListener(this);
+            homeButton.setOnClickListener(this);
+            fabButton.setOnClickListener(this);
 
-            //ListView listView = (ListView)rootView.findViewById(R.id.listOfSomething1);
-            //adapter1 = new ArrayAdapter<String>(RecipeInfoActivity.getAppContext(), R.layout.listitem2 , listItems1);
-            //listView.setAdapter(adapter1);
-            //listView.setOnItemClickListener(this);
+            ListView listView = (ListView)rootView.findViewById(R.id.listOfDetails);
+            if (savedInstanceState != null)
+                recipeInfoListItems = savedInstanceState.getStringArrayList("details");
+            else
+                recipeInfoListItems = new ArrayList<String>();
+            recipeInfoArrayAdapter = new ArrayAdapter<String>(RecipeInfoActivity.getAppContext(), R.layout.listitem , recipeInfoListItems);
 
-            model mdel = model.instance(getAppContext());
+            listView.setAdapter(recipeInfoArrayAdapter);
+            listView.setOnItemClickListener(this);
+            recipeInfoArrayAdapter.notifyDataSetChanged();
 
-            ListView recipeListView =
-                    (ListView)rootView.findViewById(R.id.listOfSomething1);
-
-            recipeInfos = mdel.getRecipeInfo(RecipeActivity.selectedRecipe);
-
-            arrayAdapter = new ArrayAdapter<RecipeInfo>(RecipeInfoActivity.getAppContext(), R.layout.listitemcheck, R.id.textCheck , recipeInfos);
-            recipeListView.setAdapter(arrayAdapter);
-            recipeListView.setOnItemClickListener(this);
+            SharedPreferences settings = RecipeInfoActivity.getAppContext().getSharedPreferences(PREFS_NAME, 0);
+            listNum = settings.getInt("listNumber", 0);
+            for (int i = 0; i < listNum; i++) {
+                String item;
+                item = settings.getString(String.valueOf(i), "");
+                recipeInfoListItems.add(item);
+            }
+            recipeInfoArrayAdapter.notifyDataSetChanged();
 
             return rootView;
         }
 
         @Override
         public void onClick(View v) {
-            tv = (TextView) getView().findViewById(R.id.editText);
-            if (v.getId() == R.id.button) {
+            recipeInfoText = (TextView) getView().findViewById(R.id.editText);
+            if (v.getId() == R.id.addDetail) {
                 Assert.assertNotNull(v);
                 // Get string entered
                 // Add string to underlying data structure
                 try {
-                    insertItem(tv.getText().toString());
+                    insertItem(recipeInfoText.getText().toString());
                 }
                 catch (RecipeException ex) {
                     System.out.println("Please enter a recipe");
                 }
-                tv.setText("");
+                recipeInfoText.setText("");
             }
             if (v.getId() == R.id.home)
             {
@@ -173,32 +155,9 @@ public class RecipeInfoActivity extends AppCompatActivity{
             {
                 String text = "Enter recipe ingredients on page 1.\n" +
                         "Enter recipe instructions on page 2.\n" +
-                        "Enter recipe hints on page 3.\n" +
-                        "Add ingredients to grocery list by selecting ingredients \n" +
-                        "and clicking 'Add to grocery list'.";
+                        "Enter recipe hints on page 3.\n";
                 Toast toast = Toast.makeText(RecipeInfoActivity.getAppContext(), text, Toast.LENGTH_LONG);
                 toast.show();
-            }
-            if (v.getId() == R.id.shop) {
-             //   int cntChoice = getListView().getCount();
-
-             //   SparseBooleanArray sparseBooleanArray = getListView().getCheckedItemPositions();
-              //  for (int i = 0; i < cntChoice; i++) {
-              //      int idx = sparseBooleanArray.keyAt(i);
-              //      if(sparseBooleanArray.valueAt(i) == true)
-              //      {
-                //        String s = (String)this.getListView().getAdapter().getItem(idx);
-                  //      ShoppingListActivity.selectedGroceryList.addGrocery(s);
-                    //    cb.setChecked(false);
-                   // }
-                    //Replace R.id.checkbox with the id of CheckBox in your layout
-                    //CheckBox mCheckBox = (CheckBox) mChild.findViewById(R.id.checkbox1);
-                    //mCheckBox.setChecked(false);
-                    //if (cb.isChecked()) {
-                    //    ShoppingListActivity.selectedGroceryList.addGrocery(selectedRecipeInfo.toString());
-                     //   cb.setChecked(false);
-                    //}
-                //}
             }
         }
 
@@ -208,21 +167,20 @@ public class RecipeInfoActivity extends AppCompatActivity{
                 throw errorRecipe;
             }
             else {
-                model mdel = model.instance(RecipeInfoActivity.getAppContext());
-                mdel.insertRecipeInfo(RecipeActivity.selectedRecipe.recipeID(), rec);
-                //cb = (CheckBox) getView().findViewById(R.id.checkBox1);
-                //cb.setOnClickListener(this);
                 // Notify adapter that underlying data structure changed
-                recipeInfos.clear();
-                recipeInfos.addAll(mdel.getRecipeInfo(RecipeActivity.selectedRecipe));
-                arrayAdapter.notifyDataSetChanged();
-                tv.setText("");
+               // recipeInfoListItems.add(rec);
+                //recipeInfoArrayAdapter.notifyDataSetChanged();
+                recipeInfoListItems.add(rec);
+                recipeInfoText.setText("");
+                // Notify adapter that underlying data structure change
+                recipeInfoArrayAdapter.notifyDataSetChanged();
+                SharedPreferences settings = RecipeInfoActivity.getAppContext().getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(String.valueOf(listNum), rec);
+                ++listNum;
+                editor.putInt("listNumber", listNum);
+                editor.commit();
             }
-        }
-
-        public static boolean getChecked()
-        {
-            return cb.isChecked();
         }
 
         class RecipeException extends Exception {
@@ -235,9 +193,7 @@ public class RecipeInfoActivity extends AppCompatActivity{
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             // Get item from ListView
-            selectedRecipeInfo = recipeInfos.get(position);
             RecipeInfo item = (RecipeInfo) parent.getItemAtPosition(position);
-            //item = "@+string/recipe_title";
             String text = "You selected item " + position +
                     " value = " + item;
             // Use a toast message to show which item selected
@@ -335,6 +291,7 @@ public class RecipeInfoActivity extends AppCompatActivity{
         super.onSaveInstanceState(icicle);
 
         Log.i(TAG, "onSaveInstanceState()");
+        super.onSaveInstanceState(icicle);
     }
 
     @Override

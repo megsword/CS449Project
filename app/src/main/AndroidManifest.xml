@@ -39,8 +39,13 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".MealPlan"
+            android:name=".MealPlanActivity"
             android:label="Meal Plan"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".FavoriteActivity"
+            android:label="Favorites"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>

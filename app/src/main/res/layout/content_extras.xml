@@ -10,10 +10,10 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorBackground"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".RecipeInfoActivity$PlaceholderFragment">
+    tools:context="edu.umkc.mes6ybmail.thedish.RecipeActivity"
+    tools:showIn="@layout/appbar_extras">
 
     <TextView
-        android:id="@+id/section_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"/>
@@ -22,52 +22,31 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:gravity="center_horizontal" android:weightSum="1"
-        android:layout_marginTop="40dp">
+        android:gravity="center_horizontal" android:weightSum="1">
 
         <ListView
-            android:id="@+id/listOfSomething1"
+            android:id="@+id/listOf"
             android:layout_height="483dp"
             android:layout_width="wrap_content"
-            android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
-            android:layout_weight="1">
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"
+            android:clickable="false">
 
         </ListView>
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_gravity="right"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@mipmap/ic_question"/>
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Go Home"
+        <Button android:text="Delete"
+            android:id="@+id/deleteExtra"
             android:textColor="@color/colorBackground"
             android:background="@color/colorPrimary"
-            android:id="@+id/home"
-            android:layout_gravity="right"
-            android:layout_weight="1" />
-
-        <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Add to Grocery List "
-            android:textColor="@color/colorBackground"
-            android:background="@color/colorPrimary"
-            android:id="@+id/shop"
             android:layout_gravity="right"
-            android:layout_weight="1" />
-
-
+            android:layout_weight="1"></Button>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/linearLayout">
+            android:id="@+id/linearLayout1">
 
             <EditText android:layout_weight="1"
                 android:id="@+id/editText"
@@ -79,7 +58,7 @@
             </EditText>
 
             <Button android:text="Add"
-                android:id="@+id/button"
+                android:id="@+id/addExtra"
                 android:textColor="@color/colorBackground"
                 android:background="@color/colorPrimary"
                 android:layout_width="wrap_content"

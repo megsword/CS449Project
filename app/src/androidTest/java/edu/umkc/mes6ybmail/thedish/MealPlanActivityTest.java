@@ -9,12 +9,12 @@ import android.widget.TextView;
 /**
  * Created by Megan on 4/24/2016.
  */
-public class MealPlanTest extends ActivityInstrumentationTestCase2<MealPlan> {
+public class MealPlanActivityTest extends ActivityInstrumentationTestCase2<MealPlanActivity> {
 
-    private MealPlan activity;
+    private MealPlanActivity activity;
 
-    public MealPlanTest() {
-        super(MealPlan.class);
+    public MealPlanActivityTest() {
+        super(MealPlanActivity.class);
     }
 
     // If you want to send key events via your test, you have to turn off
@@ -24,13 +24,13 @@ public class MealPlanTest extends ActivityInstrumentationTestCase2<MealPlan> {
         // setActivityInitialTouchMode(false) must be called before the
         //   activity is created.
         setActivityInitialTouchMode(false);
-        activity = (MealPlan) getActivity();
+        activity = (MealPlanActivity) getActivity();
     }
 
     public void MealUpdate() throws Exception {
 
         Button mealButton;
-        mealButton = (Button) activity.findViewById(R.id.button1);
+        mealButton = (Button) activity.findViewById(R.id.addExtra);
 
         TextView tv;
         tv = (TextView) activity.findViewById(R.id.editText1);

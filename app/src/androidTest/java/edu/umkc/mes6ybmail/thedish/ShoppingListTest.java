@@ -4,7 +4,6 @@ package edu.umkc.mes6ybmail.thedish;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,7 +28,7 @@ public class ShoppingListTest extends ActivityInstrumentationTestCase2<ShoppingL
     public void testGroceryUpdate() throws Exception {
 
         Button groceryButton;
-        groceryButton = (Button) activity.findViewById(R.id.button1);
+        groceryButton = (Button) activity.findViewById(R.id.addExtra);
 
         TextView tv;
         tv = (TextView) activity.findViewById(R.id.editText1);

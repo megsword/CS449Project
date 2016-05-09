@@ -21,12 +21,9 @@ import java.util.ArrayList;
 
 public class CategoryActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
-    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
+    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish";
     static final private String TAG = "The Dish";
-    //private ArrayAdapter<String> adapter;
-    //private ArrayList<String> listItems = new ArrayList<String>();
     static Category selectedCategory;
-
     private ArrayList<Category> categories;
 
     @Override
@@ -34,25 +31,24 @@ public class CategoryActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar2);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view2);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         Intent intent = getIntent();
-        String message = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
-        Context context = getApplicationContext();
-        CharSequence text = message;
+        String tabMessage = intent.getStringExtra(RecipeActivity.EXTRA_DATA);
+        Context categoryContext = getApplicationContext();
+        CharSequence categoryText = tabMessage;
         int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(categoryContext, categoryText, duration);
         toast.show();
 
         model mdel = model.instance(getApplicationContext());
@@ -83,10 +79,9 @@ public class CategoryActivity extends AppCompatActivity
             categories = mdel.getCategories();
         }
 
-        ArrayAdapter<Category> arrayAdapter =
+        ArrayAdapter<Category> categoryArrayAdapter =
                 new ArrayAdapter<Category>(this, R.layout.listitem , categories);
-        categoriesListView.setAdapter(arrayAdapter);
-
+        categoriesListView.setAdapter(categoryArrayAdapter);
         categoriesListView.setOnItemClickListener(this);
     }
 
@@ -94,20 +89,11 @@ public class CategoryActivity extends AppCompatActivity
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
         selectedCategory = categories.get(position);
-
         model mdel = model.instance(this);
-        //ArrayList<Recipe> recipes = mdel.getRecipes(selectedCategory);
-
-       // Toast.makeText(this, "Recipes: " + recipes.toString(), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(this, RecipeActivity.class);
         intent.putExtra(EXTRA_DATA, "You may add your recipes to this page.");
         startActivity(intent);
     }
-
-    //public static long getCategoryID()
-   // {
-        //return CategoryActivity.selectedCategory.categoryID();
-   // }
 
     public void updateCategory(int categoryID, String categoryName) {
         model mdel = model.instance(this);
@@ -116,45 +102,23 @@ public class CategoryActivity extends AppCompatActivity
         } catch (Exception e) {
             Toast.makeText(this,"***Error. Course " + categoryID + " doesn't exist.",Toast.LENGTH_SHORT).show();
         }
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id == R.id.nav_home){
-            //go to home page
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if (id == R.id.nav_recipes) {
-        }
-
-        if (id == R.id.nav_shop){
-            Intent intent = new Intent(this, ShoppingListActivity.class);
-            intent.putExtra(EXTRA_DATA, "Add your grocery items to this page.");
-            startActivity(intent);
-            return true;
-        }
-        if (id == R.id.nav_meals){
-            Intent intent = new Intent(this, MealPlan.class);
-            intent.putExtra(EXTRA_DATA, "Add your meals to this page.");
-            startActivity(intent);
-            return true;
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        int menuId = item.getItemId();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
+        Intent intent = MenuActivity.performMenuSelection(menuId);
+        startActivity(intent);
         return true;
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -201,7 +165,6 @@ public class CategoryActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
-
         Log.i(TAG, "onSaveInstanceState()");
     }
 

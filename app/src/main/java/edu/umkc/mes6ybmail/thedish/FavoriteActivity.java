@@ -1,5 +1,6 @@
 package edu.umkc.mes6ybmail.thedish;
 
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,18 +25,16 @@ import junit.framework.Assert;
 
 import java.util.ArrayList;
 
-
-
-public class ShoppingListActivity extends AppCompatActivity
+public class FavoriteActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener{
     public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish";
     static final private String TAG = "The Dish";
-    private static final String PREFS_NAME = "ShopPrefs";
-    private static final String CHECK_KEY = "CheckKey";
-    private ArrayAdapter<String> shopArrayAdapter;
-    private ArrayList<String> shopListItems;
+    private static final String PREFS_NAME = "FavoritesPrefs";
+    private static final String CHECK_KEY = "FavoritesCheckKey";
+    private ArrayAdapter<String> favoritesArrayAdapter;
+    private ArrayList<String> favoriteListItems;
     static public CheckBox cb;
-    public TextView shopText;
+    public TextView favoritesText;
     int listNum = 0;
 
     @Override
@@ -60,34 +59,34 @@ public class ShoppingListActivity extends AppCompatActivity
         View deleteButton = findViewById(R.id.deleteExtra);
         deleteButton.setOnClickListener(this);
 
-        ListView shopListView =
+        ListView favListView =
                 (ListView) this.findViewById(R.id.listOf);
 
         if (savedInstanceState != null)
-            shopListItems = savedInstanceState.getStringArrayList("groceries");
+            favoriteListItems = savedInstanceState.getStringArrayList("favorites");
         else
-            shopListItems = new ArrayList<String>();
-        shopArrayAdapter = new ArrayAdapter<String>(this, R.layout.listitemcheck, R.id.textCheck , shopListItems);
+            favoriteListItems = new ArrayList<String>();
+        favoritesArrayAdapter = new ArrayAdapter<String>(this, R.layout.listitemcheck, R.id.textCheck , favoriteListItems);
 
-        shopListView.setAdapter(shopArrayAdapter);
-        shopListView.setOnItemClickListener(this);
-        shopArrayAdapter.notifyDataSetChanged();
+        favListView.setAdapter(favoritesArrayAdapter);
+        favListView.setOnItemClickListener(this);
+        favoritesArrayAdapter.notifyDataSetChanged();
 
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         listNum = settings.getInt("listNumber", 0);
         for (int i = 0; i < listNum; i++) {
             String item;
             item = settings.getString(String.valueOf(i), "");
-            shopListItems.add(item);
+            favoriteListItems.add(item);
         }
-        shopArrayAdapter.notifyDataSetChanged();
+        favoritesArrayAdapter.notifyDataSetChanged();
 
         Intent intent = getIntent();
-        String shopMessage = intent.getStringExtra(ShoppingListActivity.EXTRA_DATA);
-        Context shopContext = getApplicationContext();
-        CharSequence shopText = shopMessage;
+        String favoriteMessage = intent.getStringExtra(FavoriteActivity.EXTRA_DATA);
+        Context favoriteContext = getApplicationContext();
+        CharSequence favoriteText = favoriteMessage;
         int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(shopContext, shopText, duration);
+        Toast toast = Toast.makeText(favoriteContext, favoriteText, duration);
         toast.show();
     }
 
@@ -95,16 +94,16 @@ public class ShoppingListActivity extends AppCompatActivity
     public void onClick(View arg0) {
         Assert.assertNotNull(arg0);
         // Get string entered
-        shopText = (TextView) findViewById(R.id.editText);
+        favoritesText = (TextView) findViewById(R.id.editText);
         // Add string to underlying data structure
         // Notify adapter that underlying data structure changed
         if (arg0.getId() == R.id.addExtra) {
             try {
-                insertItem(shopText.getText().toString());
-            } catch (ShopException ex) {
+                insertItem(favoritesText.getText().toString());
+            } catch (FavException ex) {
                 System.out.println("Please enter a recipe");
             }
-            shopText.setText("");
+            favoritesText.setText("");
         }
         if (arg0.getId() == R.id.deleteExtra)
         {
@@ -112,27 +111,28 @@ public class ShoppingListActivity extends AppCompatActivity
             //int itemCount = getView().getCount();
 
             //for(int i=itemCount-1; i >= 0; i--){
-             //   if(checkedItemPositions.get(i)){
-                //    shopArrayAdapter.remove(shopListItems.get(i));
-                //}
+            //   if(checkedItemPositions.get(i)){
+            //    adapter1.remove(favoriteListItems.get(i));
             //}
-           // checkedItemPositions.clear();
-           // shopArrayAdapter.notifyDataSetChanged();
+            //}
+            // checkedItemPositions.clear();
+            // adapter1.notifyDataSetChanged();
         }
     }
 
-    public void insertItem(String rec) throws ShopException{
+    public void insertItem(String rec) throws FavException{
         if (rec == "" || rec.trim().equals("") || rec == null) {
-            ShopException errorRecipe = new ShopException("Recipe title is empty.");
+            FavException errorRecipe = new FavException("Recipe title is empty.");
             throw errorRecipe;
         }
         else {
-            shopListItems.add(rec);
+            favoriteListItems.add(rec);
             // Notify adapter that underlying data structure change
             cb = (CheckBox) findViewById(R.id.checkBox);
-            shopArrayAdapter.notifyDataSetChanged();
+            favoritesArrayAdapter.notifyDataSetChanged();
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
+
             editor.putString(String.valueOf(listNum), rec);
             ++listNum;
             editor.putInt("listNumber", listNum);
@@ -144,7 +144,7 @@ public class ShoppingListActivity extends AppCompatActivity
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
 
-        Toast.makeText(this, "Groceries: " + shopListItems.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Favorites: " + favoriteListItems.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -169,9 +169,9 @@ public class ShoppingListActivity extends AppCompatActivity
         }
     }
 
-    class ShopException extends Exception {
-        public ShopException() {}
-        public ShopException(String msg) {
+    class FavException extends Exception {
+        public FavException() {}
+        public FavException(String msg) {
             super(msg);
         }
     }
@@ -217,7 +217,7 @@ public class ShoppingListActivity extends AppCompatActivity
         super.onSaveInstanceState(icicle);
 
         Log.i(TAG, "onSaveInstanceState()");
-        icicle.putStringArrayList("groceries", shopListItems);
+        icicle.putStringArrayList("favorites", favoriteListItems);
         super.onSaveInstanceState(icicle);
     }
 
@@ -229,5 +229,4 @@ public class ShoppingListActivity extends AppCompatActivity
         Log.i(TAG, "onRestoreInstanceState()");
     }
 }
-
 

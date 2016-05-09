@@ -24,85 +24,85 @@ import junit.framework.Assert;
 
 import java.util.ArrayList;
 
-public class MealPlan extends AppCompatActivity
+public class MealPlanActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, AdapterView.OnItemClickListener {
-    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish.RECIPEDATA";
+    public final static String EXTRA_DATA = "edu.umkc.mes6ybmail.thedish";
     static final private String TAG = "The Dish";
-    private static final String PREFS_NAME = "PrefsFile";
+    private static final String PREFS_NAME = "MealPlanPrefs";
     private static final String CHECK_KEY = "CheckKey";
-    static ShoppingListActivity selectedGroceryList;
-    private ArrayAdapter<String> adapter1;
-    private ArrayList<String> listItems = new ArrayList<String>();
-    private String meals = "meals";
+    private ArrayAdapter<String> mealsArrayAdapter;
+    private ArrayList<String> mealsListItems = new ArrayList<String>();
     static public CheckBox cb;
-    public TextView tv;
+    public TextView mealsText;
+    int listNum = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_shop);
+        setContentView(R.layout.activity_extras);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar3);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout3);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view3);
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        if (savedInstanceState != null) {
-            listItems = savedInstanceState.getStringArrayList("meals");
-        }
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        for (int i = 0; ; ++i) {
-            final String str = settings.getString(String.valueOf(i), "");
-            if (!str.equals("")) {
-                adapter1.add(str);
-            } else {
-                break;
-            }
-            adapter1.notifyDataSetChanged();
-        }
-
-        Intent intent = getIntent();
-        String message = intent.getStringExtra(ShoppingListActivity.EXTRA_DATA);
-        Context context = getApplicationContext();
-        CharSequence text = message;
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
-        View addButton = findViewById(R.id.button1);
+        View addButton = findViewById(R.id.addExtra);
         addButton.setOnClickListener(this);
-        View deleteButton = findViewById(R.id.buttonD);
+        View deleteButton = findViewById(R.id.deleteExtra);
         deleteButton.setOnClickListener(this);
 
-        ListView shopListView =
-                (ListView)this.findViewById(R.id.listOfGroceries);
+        ListView mealListView =
+                (ListView)this.findViewById(R.id.listOf);
 
-        adapter1 = new ArrayAdapter<String>(context, R.layout.listitemcheck, R.id.textCheck , listItems);
-        shopListView.setAdapter(adapter1);
-        shopListView.setOnItemClickListener(this);
+        if (savedInstanceState != null)
+            mealsListItems = savedInstanceState.getStringArrayList("meals");
+        else
+            mealsListItems = new ArrayList<String>();
+        mealsArrayAdapter = new ArrayAdapter<String>(this, R.layout.listitemcheck, R.id.textCheck , mealsListItems);
+
+        mealListView.setAdapter(mealsArrayAdapter);
+        mealListView.setOnItemClickListener(this);
+        mealsArrayAdapter.notifyDataSetChanged();
+
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        listNum = settings.getInt("listNumber", 0);
+        for (int i = 0; i < listNum; i++) {
+            String item;
+            item = settings.getString(String.valueOf(i), "");
+            mealsListItems.add(item);
+        }
+        mealsArrayAdapter.notifyDataSetChanged();
+
+        Intent intent = getIntent();
+        String mealsMessage = intent.getStringExtra(MealPlanActivity.EXTRA_DATA);
+        Context mealsContext = getApplicationContext();
+        CharSequence mealstext = mealsMessage;
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(mealsContext, mealstext, duration);
+        toast.show();
     }
 
     @Override
     public void onClick(View arg0) {
         Assert.assertNotNull(arg0);
         // Get string entered
-        tv = (TextView) findViewById(R.id.editText1);
+        mealsText = (TextView) findViewById(R.id.editText);
         // Add string to underlying data structure
         // Notify adapter that underlying data structure changed
         try {
-            insertItem(tv.getText().toString());
+            insertItem(mealsText.getText().toString());
         }
         catch (MealException ex) {
             System.out.println("Please enter a recipe");
         }
-        tv.setText("");
+        mealsText.setText("");
     }
 
     public void insertItem(String rec) throws MealException{
@@ -111,70 +111,41 @@ public class MealPlan extends AppCompatActivity
             throw errorRecipe;
         }
         else {
-            listItems.add(rec);
+            mealsListItems.add(rec);
             // Notify adapter that underlying data structure change
-            cb = (CheckBox) findViewById(R.id.checkBox1);
-            adapter1.notifyDataSetChanged();
+            cb = (CheckBox) findViewById(R.id.checkBox);
+            mealsArrayAdapter.notifyDataSetChanged();
             SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
             SharedPreferences.Editor editor = settings.edit();
-            editor.putString(meals, rec);
+            editor.putString(String.valueOf(listNum), rec);
+            ++listNum;
+            editor.putInt("listNumber", listNum);
             editor.commit();
         }
     }
-
-    public void addGrocery(String grocery)
-    {
-        listItems.add(grocery);
-        // Notify adapter that underlying data structure changed
-        adapter1.notifyDataSetChanged();
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(meals, grocery);
-        editor.commit();
-    }
-
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View v,
                             int position, long id) {
 
-        Toast.makeText(this, "Meals: " + listItems.toString(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Meals: " + mealsListItems.toString(), Toast.LENGTH_SHORT).show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-        if (id == R.id.nav_home){
-            //go to home page
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            return true;
-        }
-
-        if (id == R.id.nav_recipes) {
-            Intent intent = new Intent(this, CategoryActivity.class);
-            intent.putExtra(EXTRA_DATA, "Here are your recipe categories.");
-            startActivity(intent);
-            return true;
-        }
-
-        if (id == R.id.nav_shop){
-            Intent intent = new Intent(this, CategoryActivity.class);
-            intent.putExtra(EXTRA_DATA, "Add your grocery items to this page.");
-            startActivity(intent);
-            return true;
-        }
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
-            drawer.closeDrawer(GravityCompat.START);
-            return true;
+        int menuId = item.getItemId();
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        Intent intent = MenuActivity.performMenuSelection(menuId);
+        startActivity(intent);
+        return true;
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -228,11 +199,8 @@ public class MealPlan extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
-
         Log.i(TAG, "onSaveInstanceState()");
-        //icicle.getStringArrayList("groceries");
-        icicle.putStringArrayList("groceries", listItems);
-
+        icicle.putStringArrayList("meals", mealsListItems);
         super.onSaveInstanceState(icicle);
 
     }
@@ -242,8 +210,6 @@ public class MealPlan extends AppCompatActivity
         super.onRestoreInstanceState(icicle);
         // Restore UI state from the savedInstanceState.
         // This bundle has also been passed to onCreate.
-        listItems = icicle.getStringArrayList("groceries");
-        super.onRestoreInstanceState(icicle);
         Log.i(TAG, "onRestoreInstanceState()");
     }
 }
